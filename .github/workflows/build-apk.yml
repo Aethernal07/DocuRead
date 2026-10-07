@@ -28,6 +28,9 @@ jobs:
     - name: Generate missing Android platform files
       run: flutter create --platforms android --project-name docuread .
 
+    - name: Update compileSdk to 35
+      run: sed -i 's/compileSdk = 34/compileSdk = 35/g' android/app/build.gradle
+
     - name: Get dependencies
       run: flutter pub get
 
