@@ -4,6 +4,7 @@ import '../providers/document_provider.dart';
 import '../providers/theme_provider.dart';
 import '../widgets/document_card.dart';
 import '../widgets/empty_state.dart';
+import '../theme/app_theme.dart';
 import 'document_viewer_screen.dart';
 import 'settings_screen.dart';
 
@@ -14,117 +15,138 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.auto_stories,
-              color: theme.colorScheme.primary,
-              size: 28,
-            ),
-            const SizedBox(width: 12),
-            const Text('DocuRead'),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFF1F5F9),
+            Color(0xFFE0E7FF).withOpacity(0.6),
+            Color(0xFFE9D5FF).withOpacity(0.6),
           ],
+          stops: const [0.0, 0.5, 1.0],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: () {
-              context.read<ThemeProvider>().toggleTheme();
-            },
-            tooltip: 'Toggle tema',
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
-              );
-            },
-            tooltip: 'Pengaturan',
-          ),
-        ],
       ),
-      body: Consumer<DocumentProvider>(
-        builder: (context, docProvider, child) {
-          if (docProvider.recentDocuments.isEmpty) {
-            return EmptyState(
-              icon: Icons.description_outlined,
-              title: 'Belum ada dokumen',
-              subtitle: 'Buka file PDF atau DOCX untuk mulai membaca',
-              actionText: 'Buka Dokumen',
-              onAction: () => _pickAndOpenDocument(context),
-            );
-          }
-
-          return CustomScrollView(
-            slivers: [
-              // Header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Dokumen Terbaru',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${docProvider.recentDocuments.length} dokumen',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.auto_stories,
+                color: theme.colorScheme.primary,
+                size: 28,
               ),
-
-              // Document List
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final document = docProvider.recentDocuments[index];
-                      return DocumentCard(
-                        document: document,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DocumentViewerScreen(
-                                document: document,
-                              ),
-                            ),
-                          );
-                        },
-                        onDelete: () {
-                          _showDeleteDialog(context, docProvider, document);
-                        },
-                      );
-                    },
-                    childCount: docProvider.recentDocuments.length,
-                  ),
+              const SizedBox(width: 12),
+              Text(
+                'DocuRead',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _pickAndOpenDocument(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Buka Dokumen'),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.brightness_6),
+              onPressed: () {
+                context.read<ThemeProvider>().toggleTheme();
+              },
+              tooltip: 'Toggle tema',
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+              tooltip: 'Pengaturan',
+            ),
+          ],
+        ),
+        body: Consumer<DocumentProvider>(
+          builder: (context, docProvider, child) {
+            if (docProvider.recentDocuments.isEmpty) {
+              return EmptyState(
+                icon: Icons.description_outlined,
+                title: 'Belum ada dokumen',
+                subtitle: 'Buka file PDF atau DOCX untuk mulai membaca',
+                actionText: 'Buka Dokumen',
+                onAction: () => _pickAndOpenDocument(context),
+              );
+            }
+
+            return CustomScrollView(
+              slivers: [
+                // Header
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dokumen Terbaru',
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.textTheme.headlineSmall?.color,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${docProvider.recentDocuments.length} dokumen',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Document List
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 100),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final document = docProvider.recentDocuments[index];
+                        return DocumentCard(
+                          document: document,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DocumentViewerScreen(
+                                  document: document,
+                                ),
+                              ),
+                            );
+                          },
+                          onDelete: () {
+                            _showDeleteDialog(context, docProvider, document);
+                          },
+                        );
+                      },
+                      childCount: docProvider.recentDocuments.length,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _pickAndOpenDocument(context),
+          icon: const Icon(Icons.add),
+          label: const Text('Buka Dokumen'),
+        ),
       ),
     );
   }
@@ -156,7 +178,7 @@ class HomeScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus dari riwayat?'),
-        content: Text(
+        content: const Text(
           'File tidak akan dihapus dari perangkat, hanya dari daftar riwayat.',
         ),
         actions: [
