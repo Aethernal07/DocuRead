@@ -211,3 +211,4 @@ MIT License — Free untuk personal, commercial, atau modification
 **Built with ❤️ using Flutter**
 
 *Baca dokumen tanpa iklan, tanpa tracking, cuma document reader yang bersih & simple.*
+# Cache clear
